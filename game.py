@@ -3,10 +3,11 @@ from player import Player
 from bot import Bot
 from juiz import Juiz
 from screen import Screen
+from key import Key
 
 
 def unicode_hex_to_int(unicode):
-    return int(unicode, 16)
+    return int(unicode, 16) - 1
 
 def direction_decode(unicode):
     return 'h'if unicode else 'v'
@@ -22,7 +23,14 @@ class Game:
         self.juiz = Juiz()
 
         self.player1 = Player()
-        self.player1.init_keys(self.juiz.bag)
+        # self.player1.init_keys(self.juiz.bag)
+        self.player1.add_key(Key('C'))
+        self.player1.add_key(Key('A'))
+        self.player1.add_key(Key('S'))
+        self.player1.add_key(Key('A'))
+        self.player1.add_key(Key(' '))
+        self.player1.add_key(Key(' '))
+        self.player1.add_key(Key(' '))
 
         self.player2 = Bot()
         self.player2.init_keys(self.juiz.bag)
@@ -66,6 +74,7 @@ class Game:
                 d = direction_decode(d)
 
                 self.juiz.realiza_jogada(self.player1, x, y, d, palavra)
+                self.screen.w_input_box.value = ''
 
                 play_click = False
 

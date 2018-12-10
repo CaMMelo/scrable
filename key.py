@@ -28,6 +28,9 @@ class Key:
 
     def __str__(self):
         return self.key
+
+    def __repr__(self):
+        return self.key
     
     def __eq__(self, other):
         return self.value == other.value
@@ -36,7 +39,8 @@ if __name__ == "__main__":
     a = Key('a')
     b = Key('a')
 
-    if a == b:
-        print('DEU')
-    else:
-        print('falho')
+    vet = [Key('a'), Key('b')]
+    vet.remove(Key('a'))
+
+    for k in vet:
+        print(k)

@@ -30,18 +30,22 @@ class Board:
         if (self.board[x][y] == '0') or (self.board[x][y] == 'S') or (len(self.board[x][y]) == 2):
             return False
 
-        return board[x][y]
+        return self.board[x][y]
 
     def coloca_palavra(self, x, y, d, palavra):
         n = len(palavra)
 
         if d == 'v':
-            for i in range(y, y+n):
-                self.board.board[x][i] = palavra[i-y]
+            i = y
+            for c in palavra:
+                self.board[x][i] = c
+                i += 1
 
         if d == 'h':
-            for i in range(x, x+n):
-                self.board.board[i][y] = palavra[i-y]
+            i = x
+            for c in palavra:
+                self.board[i][y] = c
+                i += 1
 
     def calc_score(self, word):
         score = 0

@@ -19,8 +19,8 @@ class Screen:
         self.color_inactive = p.Color('lightskyblue3')
         self.color_active = p.Color('dodgerblue2')
 
-        self.x_input_box = InputNum(32*16+50, 32*10, 32, 32, label='X: ', value='7')
-        self.y_input_box = InputNum(32*16+40*3.3, 32*10, 32, 32, 'Y: ', value='7')
+        self.x_input_box = InputNum(32*16+50, 32*10, 32, 32, label='X: ', value='8')
+        self.y_input_box = InputNum(32*16+40*3.3, 32*10, 32, 32, 'Y: ', value='8')
         self.d_input_box = InputCheck(32*16+40*5.4, 32*10, 32, 32, ['V', 'H'], 'D: ')
         self.w_input_box = InputText(32*16+50, 32*11.4, 200, 32, 'W: ')
         self.play_button = Button(32*16+20, 32*14.5, 250, 32, 'JOGAR!', self.font4)

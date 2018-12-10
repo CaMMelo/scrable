@@ -34,9 +34,9 @@ class Juiz:
             raise Exception('Palavra muito longa.')
 
         if self.jogada == 1:
-            if (d == 'v') and ((y > 7) or ((y + n) < 7)):
+            if (d == 'v') and ((y > 7) or ((y + n) <= 7) or (x != 7)):
                 raise Exception('Primeira jogada deve passar pelo centro! (S)')
-            if (d == 'h') and ((x > 7) or ((x + n) < 7)):
+            if (d == 'h') and ((x > 7) or ((x + n) <= 7) or (y != 7)):
                 raise Exception('Primeira jogada deve passar pelo centro! (S)')
 
         if not self.dicionario.find(palavra):
@@ -47,20 +47,26 @@ class Juiz:
         if d == 'v':
             for i in range(y, y+n):
                 if self.verifica_letra(hand_cp, x, i, palavra[i-y]):
-                    print(palavra[i-y])
-                    hand_cp.remove(Key(palavra[i-y]))
+                    # TODO Arrumar mais bonito
+                    for k in hand_cp:
+                        if k.key == palavra[i-y]:
+                            hand_cp.remove(k)
 
         if d == 'h':
             for i in range(x, x+n):
                 if self.verifica_letra(hand_cp, i, y, palavra[i-x]):
-                    hand_cp.remove(Key(palavra[i-x]))
+                    # TODO Arrumar mais bonito
+                    for k in hand_cp:
+                        if k.key == palavra[i-x]:
+                            hand_cp.remove(k)
 
+        jogador.keys = hand_cp
         return True
 
     def verifica_letra(self, hand, x, y, l):
 
         if self.board.bloco_preenchido(x, y):
-            return self.board[x][y] == l
+            return self.board.board[x][y] == l
 
         for k in hand:
             if k.key == l or k.key == ' ':
@@ -69,5 +75,7 @@ class Juiz:
     def realiza_jogada(self, jogador, x, y, d, palavra):
 
         if self.verifica_jogada(jogador, x, y, d, palavra):
-            self.board.coloca_palavra(jogador, x, y, d, palavra)
+            self.board.coloca_palavra(x, y, d, palavra)
+            jogador.renew_keys(self.bag)
             # self.troca_turno()
+            self.jogada += 1
