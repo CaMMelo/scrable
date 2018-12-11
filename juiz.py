@@ -20,6 +20,16 @@ class Juiz:
     def troca_turno(self):
         self.turn = not self.turn
 
+    def troca_palavras(self, player, vet):
+        keys = []
+        for i in vet:
+            keys.append(player.keys[i])
+        for k in keys:
+            player.keys.remove(k)
+            self.bag.add_key(k.key)
+        player.renew_keys(self.bag)
+        
+
     def verifica_jogada(self, jogador, x, y, d, palavra):
 
         n = len(palavra)

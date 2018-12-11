@@ -33,7 +33,7 @@ class Key:
         return self.key
     
     def __eq__(self, other):
-        return self.value == other.value
+        return self.key == other.key
 
 if __name__ == "__main__":
     a = Key('a')

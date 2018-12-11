@@ -1,18 +1,18 @@
 import pygame as p
 import re
 
-color_inactive = p.Color('lightskyblue3')
-color_active = p.Color('dodgerblue2')
+color_inactive = (190,190,190)
+color_active = (250,250,250)
 
 
 class Input:
 	
-    def __init__(self, x, y, w, h, label=''):
+    def __init__(self, x, y, w, h, label='', color=color_inactive):
 
         self.rect = p.Rect(x, y, w, h)
         self.active = False
         self.value = ''
-        self.color = color_inactive
+        self.color = color
         self.label = label
     
     def atualiza_ativo(self, pos):
@@ -47,7 +47,7 @@ class InputNum(Input):
         if self.active:
             if unicode.lower() in ['1', '2', '3', '4', '5', '6', '7', '8', '9',
             'a', 'b', 'c', 'd', 'e', 'f']:
-                self.value = unicode
+                self.value = unicode.upper()
 
 
 class InputText(Input):
@@ -80,6 +80,29 @@ class InputCheck(Input):
         p.draw.rect(surface, self.color, self.rect, 2)
     
     def atualiza_ativo(self, pos):
+        if pos == None or self.rect.collidepoint(pos):
+            self.value = not self.value
+
+class InputSelect(Input):
+    def __init__(self, x, y, w, h, label, color_t, color_f):
+        super().__init__(x, y, w, h, label)
+        self.value = False
+        self.label = label
+        self.current_color = color_f
+        self.color_t = color_t
+        self.color_f = color_f
+
+    def draw(self, surface, font):
+        if self.label == ' ':
+            txt = font.render("?", True, self.color)
+        else:
+            txt = font.render(self.label, True, self.color)
+        surface.blit(txt, (self.rect.x + 10, self.rect.y + 5))
+
+        p.draw.rect(surface, self.current_color, self.rect, 2)
+    
+    def atualiza_ativo(self, pos):
         if self.rect.collidepoint(pos):
             self.value = not self.value
+        self.current_color = self.color_t if self.value else self.color_f
 
