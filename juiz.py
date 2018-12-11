@@ -24,23 +24,23 @@ class Juiz:
         player.renew_keys(self.bag)
         
     def verifica_pos(self, x, y):
-        aux_x, aux_y = x,y
-        if aux_x > 0:
-            if self.board.bloco_preenchido(aux_x-1, aux_y) : return True
-        if aux_x < 14:
-            if self.board.bloco_preenchido(aux_x+1, aux_y) : return True
-        if aux_y > 0:
-            if self.board.bloco_preenchido(aux_x, aux_y-1) : return True
-        if aux_y < 14:
-            if self.board.bloco_preenchido(aux_x, aux_y+1) : return True      
-        return False      
+        if x > 0:
+            return self.board.bloco_preenchido(x-1, y)
+        if x < 14:
+            return self.board.bloco_preenchido(x+1, y)
+        if y > 0:
+            return self.board.bloco_preenchido(x, y-1)
+        if y < 14:
+            return self.board.bloco_preenchido(x, y+1) 
+        
+        return self.board.bloco_preenchido(x, y)    
 
     def verifica_jogada(self, jogador, x, y, d, palavra):
 
         n = len(palavra)
 
-        if n <= 2:
-            raise Exception('A palavra deve ter mais de 2 caracteres.')
+        if n == 0:
+            raise Exception(f'Forneça uma palavra.')
 
         if not self.dicionario.find(palavra):
             raise Exception(f'A palavra {palavra} não existe no dicionario.')
@@ -58,15 +58,20 @@ class Juiz:
                 raise Exception('Primeira jogada deve passar pelo centro! (S)')
         else:
             aux_x, aux_y = x, y
+            b = False
             for c in palavra:
+                b = self.verifica_pos(aux_x, aux_y)
+                
+                if b:
+                    break
+                
                 if d == 'h':
-                    if not self.verifica_pos(aux_x,aux_y): 
-                        raise Exception('A Jogada deve passar por uma letra no tabuleiro')
                     aux_x += 1
                 if d == 'v':
-                    if not self.verifica_pos(aux_x,aux_y):
-                        raise Exception('A Jogada deve passar por uma letra no tabuleiro')
-                    aux_y += 1
+                    aux_y += 1 
+
+            if not b:
+                raise Exception(f'A palavra ser conectada à uma outra palavra.')                       
 
 
         # confere 
