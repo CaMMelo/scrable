@@ -35,10 +35,10 @@ class Game:
 
         self.turno = bool(randint(0,1))
 
-        self.player1 = Player('Player 1')
+        self.player1 = Bot(self.juiz, 'ROBOZONARO')
         self.player1.init_keys(self.juiz.bag)
 
-        self.player2 = Player('Player 2')
+        self.player2 = Bot(self.juiz, 'ROBOZONARA')
         self.player2.init_keys(self.juiz.bag)
 
         self.run = True
@@ -115,8 +115,11 @@ class Game:
                 selection_click = False
 
             # Realiza jogada
-            if play_click:
+            if True:
                 self.troca_turno()
+
+                jogada = player.play()
+
                 x = self.screen.x_input_box.value
                 y = self.screen.y_input_box.value
                 d = self.screen.d_input_box.value
@@ -126,7 +129,11 @@ class Game:
                 y = unicode_hex_to_int(y)
                 d = direction_decode(d)
 
-                self.juiz.realiza_jogada(player, x, y, d, palavra)
+                if jogada:
+                    x, y, d, palavra, _ = jogada
+                    self.juiz.realiza_jogada(player, x, y, d, palavra)
+                    self.player1.primeira_jogada = False
+                    self.player2.primeira_jogada = False
                 self.screen.w_input_box.value = ''
 
                 play_click = False
@@ -146,7 +153,6 @@ class Game:
             if pass_click:
                 self.troca_turno()
                 pass_click = False
-
 
             # Imprimir tela
             self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y)

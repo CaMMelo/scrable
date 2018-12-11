@@ -93,7 +93,9 @@ class Juiz:
                     nova_palavra = antes_palavra+c+depois_palavra
 
             if not self.dicionario.find(nova_palavra) and (nova_palavra != ''):
-                raise Exception(f'Palavra {palavra} não encaixa no tabuleiro.')
+                return False
+        
+        return True
 
 
     def verifica_jogada(self, jogador, x, y, d, palavra):
@@ -132,11 +134,13 @@ class Juiz:
                     aux_y += 1 
 
             if not b:
-                raise Exception(f'A palavra ser conectada à uma outra palavra.')                       
+                pass
+                #raise Exception(f'A palavra ser conectada à uma outra palavra.')                       
 
 
         # confere 
-        self.verifica_adjacencia(x,y,d,palavra)
+        if not self.verifica_adjacencia(x,y,d,palavra):
+            raise Exception(f'Palavra {palavra} não encaixa no tabuleiro.')
 
         hand_cp = copy.deepcopy(jogador.keys)
 
@@ -171,6 +175,7 @@ class Juiz:
     def realiza_jogada(self, jogador, x, y, d, palavra):
 
         if self.verifica_jogada(jogador, x, y, d, palavra):
-            jogador.score += self.board.coloca_palavra(x, y, d, palavra)
+            self.board.coloca_palavra(x, y, d, palavra)
+            jogador.score += self.board.calc_score(x,y,d,palavra)
             jogador.renew_keys(self.bag)
             self.jogada += 1

@@ -32,8 +32,8 @@ class Board:
 
         return self.board[x][y]
 
-    def coloca_palavra(self, x, y, d, palavra):
-        n = len(palavra)
+
+    def calc_score(self, x, y, d, palavra):
         score = 0
         multiplicador_final = 1
 
@@ -50,10 +50,8 @@ class Board:
                 elif self.board[x][i] == 'TP':
                     multiplicador_final *= 3
 
-                score += sletra 
-                
-                self.board[x][i] = c
                 i += 1
+                score += sletra 
 
         if d == 'h':
             i = x
@@ -68,8 +66,22 @@ class Board:
                 elif self.board[i][y] == 'TP':
                     multiplicador_final *= 3
 
+                i += 1
                 score += sletra 
-                self.board[i][y] = c
+        
+        return score * multiplicador_final
+
+    def coloca_palavra(self, x, y, d, palavra):
+        n = len(palavra)
+
+        if d == 'v':
+            i = y
+            for c in palavra:                
+                self.board[x][i] = c
                 i += 1
 
-        return score * multiplicador_final
+        if d == 'h':
+            i = x
+            for c in palavra:
+                self.board[i][y] = c
+                i += 1
