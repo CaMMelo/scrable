@@ -10,12 +10,12 @@ class Button:
         self.font = font
     
     def draw(self, surface):
-        text = self.font.render(self.text, True, (150,150,150))
+        text = self.font.render(self.text, True, (250,250,250))
 
         x = self.rect.x + self.rect.w // 2 - text.get_width()//2
         y = self.rect.y + self.rect.h // 2 - text.get_height()//2
 
-        p.draw.rect(surface, (66,66,66), self.rect)
+        p.draw.rect(surface, self.color, self.rect)
         surface.blit(text, (x, y))
         
     def check_click(self, pos):

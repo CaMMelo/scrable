@@ -1,5 +1,5 @@
 import pygame as p
-from input import InputNum, InputText, InputCheck
+from input import InputNum, InputText, InputCheck, InputSelect
 from button import Button
 
 
@@ -19,11 +19,22 @@ class Screen:
         self.color_inactive = p.Color('lightskyblue3')
         self.color_active = p.Color('dodgerblue2')
 
-        self.x_input_box = InputNum(32*16+50, 32*10, 32, 32, label='X: ', value='8')
-        self.y_input_box = InputNum(32*16+40*3.3, 32*10, 32, 32, 'Y: ', value='8')
-        self.d_input_box = InputCheck(32*16+40*5.4, 32*10, 32, 32, ['V', 'H'], 'D: ')
-        self.w_input_box = InputText(32*16+50, 32*11.4, 200, 32, 'W: ')
-        self.play_button = Button(32*16+20, 32*14.5, 250, 32, 'JOGAR!', self.font4)
+        self.x_input_box = InputNum(32*17+18, 32*9.25, 32, 32, label='X ', value='8')
+        self.y_input_box = InputNum(32*20+12, 32*9.25, 32, 32, 'Y ', value='8')
+        self.d_input_box = InputCheck(32*23+12, 32*9.25, 32, 32, ['V', 'H'], 'D ')
+        self.w_input_box = InputText(32*16+50, 32*10.7, 219, 32, 'W ')
+
+        self.hand_inputs = []
+
+        for i in range(0,7):
+            aux = InputSelect(((.25+(i*1.25))+16)*32, (7+.5)*32, 32, 32, '', (200,0,20), (120,120,120) )
+            self.hand_inputs.append(aux)
+        
+        self.switch_keys_button = Button(32*16+20, 32*12.25, 250, 32, 'TROCAR LETRAS', self.font4, color=(200,00,80))
+
+        self.pass_button = Button(32*16+20, 32*13.50, 250, 32, 'PASSAR TURNO', self.font4, color=(200,80,00))
+
+        self.play_button = Button(32*16+20, 32*14.75, 250, 32, 'JOGAR!', self.font4, color=(0,200,20))
 
         self.play_b = p.Rect(32*16+20, 32*14.5, 250, 32)
     
@@ -69,6 +80,12 @@ class Screen:
     
     def draw_bg(self):
         self.surface.fill((22, 22, 22))
+
+        buttons_section = (32*16,32*12,32*9,32*4)
+        self.surface.fill((40,40,40), buttons_section)
+
+        hand_section = (32*16,32*6,32*9,32*3)
+        self.surface.fill((40,40,40), hand_section)
     
     def draw_inputs(self):
         
@@ -76,15 +93,27 @@ class Screen:
         self.y_input_box.draw(self.surface, self.font4)
         self.d_input_box.draw(self.surface, self.font4)
         self.w_input_box.draw(self.surface, self.font4)
+        self.switch_keys_button.draw(self.surface)
         self.play_button.draw(self.surface)
+        self.pass_button.draw(self.surface)
     
     def draw_hand(self, hand):
-        y = 4
-        text = self.font3.render("Sua mão: ", False, (230, 230, 230))
-        self.surface.blit(text, (32 * 16 + 6,  (y+.25)*32))
+        text = self.font3.render("Sua mão: ", False, (250, 250, 250))
+        self.surface.blit(text, (32 * 16 + 9,  (6.3+.25)*32))
 
         for i,k in enumerate(hand):
-            self.draw_char((.25+(i*1.25))+16, y+1, (255, 255, 255), k.key)
+            self.hand_inputs[i].label = k.key
+            self.hand_inputs[i].draw(self.surface, self.font4)
+
+    def draw_border_box(self, x, y, color, blind_t=0):
+        square = (32*x,32*y,32,32)
+        self.surface.fill(color, square, blind_t)
+
+    def draw_selection(self, x, y):
+        if x > 0 and y > 0:
+            self.draw_border_box(x, 0, (200,0,30), blind_t=1)
+            self.draw_border_box(0, y, (200,0,30), blind_t=1)
+            self.draw_border_box(x, y, (100,100,100), blind_t=4)
     
     def draw_board(self, board):
         for i,row in enumerate(board):
@@ -110,13 +139,14 @@ class Screen:
                     else:
                         self.draw_char(i + 1, j + 1, (132, 111, 43), c)
     
-    def draw(self, hand, board):
+    def draw(self, hand, board, pos_sel_x, pos_sel_y):
         
         self.draw_bg()
         self.draw_border()
         self.draw_board(board)
+        self.draw_selection(pos_sel_x, pos_sel_y)
+        
         self.draw_hand(hand)
-
         self.draw_inputs()
 
         p.display.flip()
