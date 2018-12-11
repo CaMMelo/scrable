@@ -35,6 +35,67 @@ class Juiz:
         
         return self.board.bloco_preenchido(x, y)    
 
+    def verifica_adjacencia(self, x, y, d, palavra):
+        antes_palavra = ''
+        depois_palavra = ''
+
+        aux_x, aux_y = x, y
+        aux2_x, aux2_y = x, y
+
+        for c in palavra:
+            if self.board.board[aux_x][aux_y] == c:
+                if d == 'h':
+                    aux_x += 1
+                else:
+                    aux_y += 1
+                continue
+            
+            antes_palavra = ''
+            depois_palavra = ''
+            nova_palavra = ''
+
+            if d == 'h':
+                # parte cima
+                aux2_x, aux2_y = aux_x, aux_y-1
+                while(self.board.bloco_preenchido(aux2_x, aux2_y)):
+                    antes_palavra += self.board.board[aux2_x][aux2_y]
+                    aux2_y -= 1
+                antes_palavra = antes_palavra[::-1]
+
+                # parte baixo
+                aux2_x, aux2_y = aux_x, aux_y+1
+                while(self.board.bloco_preenchido(aux2_x, aux2_y)):
+                    depois_palavra += self.board.board[aux2_x][aux2_y]
+                    aux2_y += 1
+
+                aux_x += 1
+
+                if antes_palavra or depois_palavra:
+                    nova_palavra = antes_palavra+c+depois_palavra
+
+            if d == 'v':
+                # parte cima
+                aux2_x, aux2_y = aux_x-1, aux_y
+                while(self.board.bloco_preenchido(aux2_x, aux2_y)):
+                    antes_palavra += self.board.board[aux2_x][aux2_y]
+                    aux2_x -= 1
+                antes_palavra = antes_palavra[::-1]
+
+                # parte baixo
+                aux2_x, aux2_y = aux_x+1, aux_y
+                while(self.board.bloco_preenchido(aux2_x, aux2_y)):
+                    depois_palavra += self.board.board[aux2_x][aux2_y]
+                    aux2_x += 1
+
+                aux_y += 1
+
+                if antes_palavra or depois_palavra:
+                    nova_palavra = antes_palavra+c+depois_palavra
+
+            if not self.dicionario.find(nova_palavra) and (nova_palavra != ''):
+                raise Exception(f'Palavra {palavra} não encaixa no tabuleiro.')
+
+
     def verifica_jogada(self, jogador, x, y, d, palavra):
 
         n = len(palavra)
@@ -75,6 +136,7 @@ class Juiz:
 
 
         # confere 
+        self.verifica_adjacencia(x,y,d,palavra)
 
         hand_cp = copy.deepcopy(jogador.keys)
 
