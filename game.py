@@ -1,4 +1,5 @@
 import pygame as p
+from random import randint
 from player import Player
 from bot import Bot
 from juiz import Juiz
@@ -32,26 +33,23 @@ class Game:
 
         self.juiz = Juiz()
 
-        self.player1 = Player()
-        # self.player1.init_keys(self.juiz.bag)
-        self.player1.add_key(Key('C'))
-        self.player1.add_key(Key('A'))
-        self.player1.add_key(Key('S'))
-        self.player1.add_key(Key('A'))
-        self.player1.add_key(Key(' '))
-        self.player1.add_key(Key(' '))
-        self.player1.add_key(Key(' '))
+        self.turno = bool(randint(0,1))
 
-        self.player2 = Bot()
+        self.player1 = Player('Player 1')
+        self.player1.init_keys(self.juiz.bag)
+
+        self.player2 = Player('Player 2')
         self.player2.init_keys(self.juiz.bag)
 
         self.run = True
+    
+    def troca_turno(self):
+        self.turno = not self.turno
 
     def reset_hand_inputs(self):
         for hand_input in self.screen.hand_inputs:
             hand_input.value = False
             hand_input.current_color = hand_input.color_f
-            
 
     def game_loop(self):
 
@@ -62,8 +60,9 @@ class Game:
         pos_sel_x = 0
         pos_sel_y = 0
 
-
         while self.run:
+
+            player = self.player1 if self.turno else self.player2
             
             # Trata entrada
             for ev in p.event.get():
@@ -78,6 +77,7 @@ class Game:
 
                 if ev.type == p.QUIT:
                     self.run = False
+                    continue
                 
                 if ev.type == p.MOUSEBUTTONDOWN:
                     self.screen.x_input_box.atualiza_ativo(ev.pos)
@@ -106,9 +106,17 @@ class Game:
                     self.screen.x_input_box.atualiza_valor(ev.key, ev.unicode)
                     self.screen.y_input_box.atualiza_valor(ev.key, ev.unicode)
                     self.screen.w_input_box.atualiza_valor(ev.key, ev.unicode)
+            
+            # selection click
+            if selection_click:
+                self.screen.x_input_box.value = int_to_hex(str(pos_sel_x))
+                self.screen.y_input_box.value = int_to_hex(str(pos_sel_y))
+                self.screen.w_input_box.active = True
+                selection_click = False
 
             # Realiza jogada
             if play_click:
+                self.troca_turno()
                 x = self.screen.x_input_box.value
                 y = self.screen.y_input_box.value
                 d = self.screen.d_input_box.value
@@ -118,37 +126,30 @@ class Game:
                 y = unicode_hex_to_int(y)
                 d = direction_decode(d)
 
-                self.juiz.realiza_jogada(self.player1, x, y, d, palavra)
+                self.juiz.realiza_jogada(player, x, y, d, palavra)
                 self.screen.w_input_box.value = ''
 
                 play_click = False
-
-            # Passar turno
-            if pass_click:
-                pass_click = False
-                # mudar turno
-                pass
             
             # Trocar palavras
             if switch_keys_click:
+                self.troca_turno()
                 vet_aux = []
                 for i in range(0,7):
                     if self.screen.hand_inputs[i].value: vet_aux.append(i)
                         
-                self.juiz.troca_palavras(self.player1, vet_aux)
+                self.juiz.troca_palavras(player, vet_aux)
                 switch_keys_click = False
                 self.reset_hand_inputs()
-
-            # selection click
-            if selection_click:
-                self.screen.x_input_box.value = int_to_hex(str(pos_sel_x))
-                self.screen.y_input_box.value = int_to_hex(str(pos_sel_y))
-                self.screen.w_input_box.active = True
-                selection_click = False
+            
+            # Passar turno
+            if pass_click:
+                self.troca_turno()
+                pass_click = False
 
 
             # Imprimir tela
-            self.screen.draw(self.player1.keys, self.juiz.board.board, pos_sel_x, pos_sel_y)
+            self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y)
 
             p.display.flip()
 

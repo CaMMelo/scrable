@@ -49,6 +49,15 @@ class Screen:
             text = self.font2.render(char, False, (255, 255, 255))
             self.surface.blit(text, (32 * x + 3, 32 * y + 3))
     
+    def draw_player_info(self, player):
+        y = 1.2
+
+        text = self.font3.render("Nome: "+player.name, False, (250, 250, 250))
+        self.surface.blit(text, (32 * 16 + 9,  (y+.25)*32))
+
+        text = self.font3.render("Score: "+str(player.score), False, (250, 250, 250))
+        self.surface.blit(text, (32 * 16 + 9,  (y+.25+.75)*32))
+
     def draw_border(self):
         for i in range(1,16):
             if i % 2:
@@ -139,14 +148,15 @@ class Screen:
                     else:
                         self.draw_char(i + 1, j + 1, (132, 111, 43), c)
     
-    def draw(self, hand, board, pos_sel_x, pos_sel_y):
+    def draw(self, player, board, pos_sel_x, pos_sel_y):
         
         self.draw_bg()
         self.draw_border()
         self.draw_board(board)
         self.draw_selection(pos_sel_x, pos_sel_y)
-        
-        self.draw_hand(hand)
+        self.draw_player_info(player)
+
+        self.draw_hand(player.keys)
         self.draw_inputs()
 
         p.display.flip()

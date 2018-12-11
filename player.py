@@ -1,8 +1,9 @@
 class Player:
 
-    def __init__(self):
+    def __init__(self, name):
         self.keys = []
         self.score = 0
+        self.name = name
 
     def init_keys(self, bag):
         for i in range(0,7):
