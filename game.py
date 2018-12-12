@@ -204,7 +204,7 @@ class Game:
             b = len(self.juiz.bag.bag) == 0
             c = (self.player1.passadas >= 2 and self.player2.passadas >= 2)
             d = (len(self.player1.keys) == 0) or (len(self.player2.keys) == 0)
-            b = b or (c or d)
+            b = b and (c or d)
 
 
             if b:
