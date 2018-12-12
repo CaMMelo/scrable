@@ -54,10 +54,10 @@ if __name__ == '__main__':
 
     dfa = DFA()
 
-    with open('wordlist-small.txt', 'r') as in_file:
+    with open('dicionario.txt', 'r') as in_file:
 
         for line in in_file:
             line = line.strip()
             dfa.insert(line)
     
-    dfa.save('wordlist-small.bin')
+    # dfa.save('wordlist-small.bin')
