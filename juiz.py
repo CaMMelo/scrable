@@ -14,26 +14,14 @@ class Juiz:
         self.board = Board()
         self.dicionario = Dict('wordlist-small.bin')
 
-    def troca_palavras(self, player, vet):
+    def troca_letras(self, player, vet):
         keys = []
         for i in vet:
             keys.append(player.keys[i])
         for k in keys:
             player.keys.remove(k)
             self.bag.add_key(k.key)
-        player.renew_keys(self.bag)
-        
-    def verifica_pos(self, x, y):
-        if x > 0:
-            return self.board.bloco_preenchido(x-1, y)
-        if x < 14:
-            return self.board.bloco_preenchido(x+1, y)
-        if y > 0:
-            return self.board.bloco_preenchido(x, y-1)
-        if y < 14:
-            return self.board.bloco_preenchido(x, y+1) 
-        
-        return self.board.bloco_preenchido(x, y)    
+        player.renew_keys(self.bag) 
 
     def verifica_adjacencia(self, x, y, d, palavra):
         antes_palavra = ''
@@ -120,22 +108,21 @@ class Juiz:
             if (d == 'h') and ((x > 7) or ((x + n) <= 7) or (y != 7)):
                 raise Exception('Primeira jogada deve passar pelo centro! (S)')
         else:
-            aux_x, aux_y = x, y
+            xx, yy = x, y
             b = False
             for c in palavra:
-                b = self.verifica_pos(aux_x, aux_y)
+                b = self.board.bloco_preenchido(xx, yy)
                 
                 if b:
                     break
                 
                 if d == 'h':
-                    aux_x += 1
+                    xx += 1
                 if d == 'v':
-                    aux_y += 1 
+                    yy += 1 
 
             if not b:
-                pass
-                #raise Exception(f'A palavra ser conectada à uma outra palavra.')                       
+                raise Exception(f'{palavra} deve estar conectada à uma outra palavra.')                       
 
 
         # confere 
@@ -146,19 +133,42 @@ class Juiz:
 
         if d == 'v':
             for i in range(y, y+n):
-                if self.verifica_letra(hand_cp, x, i, palavra[i-y]):
-                    # TODO Arrumar mais bonito
-                    for k in hand_cp:
-                        if k.key == palavra[i-y]:
-                            hand_cp.remove(k)
+
+                l = palavra[i-y]
+                
+                if self.board.board[x][i] == l:
+                    continue 
+
+                for k in hand_cp:
+                    if k.key == l:
+                        hand_cp.remove(Key(l))
+                        break
+                    
+                    elif k.key == ' ':
+                        hand_cp.remove(Key(' '))
+                        palavra = list(palavra)
+                        palavra[i-y] = '?'
+                        palavra = ''.join(palavra)
+                        break
 
         if d == 'h':
             for i in range(x, x+n):
-                if self.verifica_letra(hand_cp, i, y, palavra[i-x]):
-                    # TODO Arrumar mais bonito
-                    for k in hand_cp:
-                        if k.key == palavra[i-x]:
-                            hand_cp.remove(k)
+                l = palavra[i-x]
+                
+                if self.board.board[i][y] == l:
+                    continue 
+
+                for k in hand_cp:
+                    if k.key == l:
+                        hand_cp.remove(Key(l))
+                        break
+                    
+                    elif k.key == ' ':
+                        hand_cp.remove(Key(' '))
+                        palavra = list(palavra)
+                        palavra[i-x] = '?'
+                        palavra = ''.join(palavra)
+                        break
 
         jogador.keys = hand_cp
         return True

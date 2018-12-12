@@ -89,7 +89,6 @@ class Board:
                 i += 1
                 score += sletra 
         
-        print(multiplicador_final, palavra, x, y)
         return score * multiplicador_final
 
     def coloca_palavra(self, x, y, d, palavra):

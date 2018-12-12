@@ -10,8 +10,6 @@ class Bot(Player):
         self.board = juiz.board
         self.dic = juiz.dicionario
 
-        self.primeira_jogada = True
-
         self.juiz = juiz
     
     def palavra_nao_existe(self, x, y, d, palavra):
@@ -164,7 +162,8 @@ class Bot(Player):
                     self.move = (xx, yy, d, partial_word, score)
             
             for e in node[1]:
-                if (e in rack) and (e in self.cross_check(x, y, d)):
+                b = e in self.cross_check(x, y, d)
+                if (e in rack) and b:
                     rack.remove(e)
 
                     if d == 'v':
@@ -174,6 +173,19 @@ class Bot(Player):
                         self.extend_right(partial_word+e, node[1][e], x+1, y, rack, d)
                     
                     rack.append(e)
+                
+                elif (' ' in rack) and b:
+                    
+                    rack.remove(' ')
+
+                    if d == 'v':
+                        self.extend_right(partial_word+e, node[1][e], x, y+1, rack, d)
+                    
+                    if d == 'h':
+                        self.extend_right(partial_word+e, node[1][e], x+1, y, rack, d)
+                    
+                    rack.append(' ')
+                
         elif l in node[1]:
 
             if d == 'v':
@@ -191,6 +203,10 @@ class Bot(Player):
                     rack.remove(l)
                     self.left_part(partial_word+l, node[1][l], limit-1, x, y, rack, d)
                     rack.append(l)
+                elif ' ' in rack:
+                    rack.remove(' ')
+                    self.left_part(partial_word+l, node[1][l], limit-1, x, y, rack, d)
+                    rack.append(' ')
     
     def play(self):
         

@@ -34,13 +34,3 @@ class Key:
     
     def __eq__(self, other):
         return self.key == other.key
-
-if __name__ == "__main__":
-    a = Key('a')
-    b = Key('a')
-
-    vet = [Key('a'), Key('b')]
-    vet.remove(Key('a'))
-
-    for k in vet:
-        print(k)

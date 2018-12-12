@@ -19,4 +19,6 @@ class Fear:
 
 
 if __name__ == '__main__':
-    pass
+    
+    j = Juiz()
+    print(j.dicionario.find('rabelo'))

@@ -4,7 +4,8 @@ class Player:
         self.keys = []
         self.score = 0
         self.name = name
-
+        self.primeira_jogada = True
+    
     def init_keys(self, bag):
         for i in range(0,7):
             self.keys.append(bag.sort_key())
