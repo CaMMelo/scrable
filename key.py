@@ -33,4 +33,7 @@ class Key:
         return self.key
     
     def __eq__(self, other):
+        if other == None:
+            return False
+        
         return self.key == other.key

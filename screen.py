@@ -48,6 +48,19 @@ class Screen:
         elif type == 2:
             text = self.font2.render(char, False, (255, 255, 255))
             self.surface.blit(text, (32 * x + 3, 32 * y + 3))
+
+    def draw_messages_sections(self, string, color=(200,30,0)):
+        buttons_section = (32*16,32*3,32*9,32*3)
+        self.surface.fill(color, buttons_section)
+
+        text1 = self.font3.render(string[0:27], False, (230, 230, 230))
+        self.surface.blit(text1, (32 * 16 + 8, 32 * 3 + 5))
+
+        text2 = self.font3.render(string[27:54], False, (230, 230, 230))
+        self.surface.blit(text2, (32 * 16 + 8, 32 * 3 + 15*2))
+
+        text3 = self.font3.render(string[54:81], False, (230, 230, 230))
+        self.surface.blit(text3, (32 * 16 + 8, 32 * 3 + 15*3.75))
     
     def draw_player_info(self, player):
         y = 1.2
@@ -111,8 +124,9 @@ class Screen:
         self.surface.blit(text, (32 * 16 + 9,  (6.3+.25)*32))
 
         for i,k in enumerate(hand):
-            self.hand_inputs[i].label = k.key
-            self.hand_inputs[i].draw(self.surface, self.font4)
+            if k != None:
+                self.hand_inputs[i].label = k.key
+                self.hand_inputs[i].draw(self.surface, self.font4)
 
     def draw_border_box(self, x, y, color, blind_t=0):
         square = (32*x,32*y,32,32)
@@ -148,7 +162,7 @@ class Screen:
                     else:
                         self.draw_char(i + 1, j + 1, (132, 111, 43), c)
     
-    def draw(self, player, board, pos_sel_x, pos_sel_y):
+    def draw(self, player, board, pos_sel_x, pos_sel_y, string=''):
         
         self.draw_bg()
         self.draw_border()
@@ -157,6 +171,9 @@ class Screen:
         self.draw_player_info(player)
 
         self.draw_hand(player.keys)
+        
         self.draw_inputs()
+
+        self.draw_messages_sections(string)
 
         p.display.flip()

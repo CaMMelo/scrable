@@ -19,8 +19,9 @@ class Juiz:
         for i in vet:
             keys.append(player.keys[i])
         for k in keys:
-            player.keys.remove(k)
-            self.bag.add_key(k.key)
+            if k != None:
+                player.keys.remove(k)
+                self.bag.add_key(k.key)
         player.renew_keys(self.bag) 
 
     def verifica_adjacencia(self, x, y, d, palavra):

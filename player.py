@@ -5,6 +5,7 @@ class Player:
         self.score = 0
         self.name = name
         self.primeira_jogada = True
+        self.passadas = 0
     
     def init_keys(self, bag):
         for i in range(0,7):
@@ -15,4 +16,6 @@ class Player:
 
     def renew_keys(self, bag):
         while len(self.keys) < 7:
-            self.keys.append(bag.sort_key())
+            k = bag.sort_key()
+
+            self.keys.append(k)

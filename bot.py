@@ -161,8 +161,9 @@ class Bot(Player):
                 if ok and ((not self.move) or (self.move[4] < score)):
                     self.move = (xx, yy, d, partial_word, score)
             
+            cross = self.cross_check(x, y, d)
             for e in node[1]:
-                b = e in self.cross_check(x, y, d)
+                b = e in cross
                 if (e in rack) and b:
                     rack.remove(e)
 
@@ -174,16 +175,13 @@ class Bot(Player):
                     
                     rack.append(e)
                 
+                
                 elif (' ' in rack) and b:
-                    
                     rack.remove(' ')
-
                     if d == 'v':
                         self.extend_right(partial_word+e, node[1][e], x, y+1, rack, d)
-                    
                     if d == 'h':
                         self.extend_right(partial_word+e, node[1][e], x+1, y, rack, d)
-                    
                     rack.append(' ')
                 
         elif l in node[1]:
@@ -207,13 +205,19 @@ class Bot(Player):
                     rack.remove(' ')
                     self.left_part(partial_word+l, node[1][l], limit-1, x, y, rack, d)
                     rack.append(' ')
+
+    def escolhe_trocas(self):
+        
+        vetor = [x for x in range(len(self.keys))]
+
+        return vetor
     
     def play(self):
         
         ancoras = self.get_ancoras()
         self.move = None
         
-        rack = [x.key for x in self.keys]
+        rack = [x.key for x in filter(lambda x: x != None, self.keys)]
 
         for ancora in ancoras:
             x, y, l, d = ancora

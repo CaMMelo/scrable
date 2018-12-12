@@ -21,11 +21,11 @@ def int_to_hex(str):
 
 
 def direction_decode(unicode):
-    return 'h'if unicode else 'v'
+    return 'h' if unicode else 'v'
 
 class Game:
     
-    def __init__(self):
+    def __init__(self, tipo_p1, nome_p1, tipo_p2, nome_p2):
         
         p.init()
         p.font.init()
@@ -35,15 +35,31 @@ class Game:
 
         self.turno = bool(randint(0,1))
 
-        self.player1 = Bot(self.juiz, 'ROBOZONARO')
-        self.player1.init_keys(self.juiz.bag)
+        if tipo_p1:
+            self.player1 = Player(nome_p1)
+        else:
+            self.player1 = Bot(self.juiz, nome_p1)
 
-        self.player2 = Bot(self.juiz, 'ROBOZONARA')
+        if tipo_p2:
+            self.player2 = Player(nome_p2)
+        else:
+            self.player2 = Bot(self.juiz, nome_p2)
+
+
+        self.player1.init_keys(self.juiz.bag)
+        # self.player1.add_key(Key(' '))
+        # self.player1.add_key(Key(' '))
+        # self.player1.add_key(Key(' '))
+        # self.player1.add_key(Key(' '))
+        # self.player1.add_key(Key(' '))
+        # self.player1.add_key(Key(' '))
+        # self.player1.add_key(Key(' '))
+
         self.player2.init_keys(self.juiz.bag)
 
         self.run = True
-
-        self.passadas = 0
+        self.msg_atual = ''
+        self.fim_de_jogo = False
     
     def troca_turno(self):
         self.turno = not self.turno
@@ -108,37 +124,41 @@ class Game:
                     self.screen.x_input_box.atualiza_valor(ev.key, ev.unicode)
                     self.screen.y_input_box.atualiza_valor(ev.key, ev.unicode)
                     self.screen.w_input_box.atualiza_valor(ev.key, ev.unicode)
-            
+            # endif
+
             # selection click
             if selection_click:
                 self.screen.x_input_box.value = int_to_hex(str(pos_sel_x))
                 self.screen.y_input_box.value = int_to_hex(str(pos_sel_y))
                 self.screen.w_input_box.active = True
                 selection_click = False
+
+            if self.fim_de_jogo:
+                continue
             
             if (type(player).__name__ == 'Bot'):
-                
                 jogada = player.play()
+                if jogada:
+                    x, y, d, palavra, _ = jogada
 
-                if play_click or True:
-
-                    if jogada:
-                        print(jogada)
-                        x, y, d, palavra, _ = jogada
+                    try:
                         self.juiz.realiza_jogada(player, x, y, d, palavra)
-                        self.player1.primeira_jogada = False
-                        self.player2.primeira_jogada = False
-                        self.passadas = 0
-                    else:
-                        self.juiz.troca_letras(player, [0,1,2,3,4,5,6])
-                        self.passadas += 1
-                    
-                    play_click = False
+                    except Exception as e:
+                        self.msg_atual = str(e)
+
+                    self.player1.primeira_jogada = False
+                    self.player2.primeira_jogada = False
+                    self.troca_turno()
+                    player.passadas = 0
+                else:
+                    self.juiz.troca_letras(player, player.escolhe_trocas())
+                    player.passadas += 1
+                    self.troca_turno()
+                
+                play_click = False
             else:
                 if play_click:
                     self.troca_turno()
-
-                    jogada = player.play()
 
                     x = self.screen.x_input_box.value
                     y = self.screen.y_input_box.value
@@ -148,6 +168,14 @@ class Game:
                     x = unicode_hex_to_int(x)
                     y = unicode_hex_to_int(y)
                     d = direction_decode(d)
+
+                    try:
+
+                        self.juiz.realiza_jogada(player, x, y, d, palavra)
+
+                    except Exception as e:
+
+                        self.msg_atual = str(e)
 
                     self.screen.w_input_box.value = ''
 
@@ -168,15 +196,23 @@ class Game:
                 if pass_click:
                     self.troca_turno()
                     pass_click = False
-                    self.passadas += 1
+                    player.passadas += 1
                 else:
-                    self.passadas = 0
-            
-            if self.passadas >= 2:
-                raise Exception(f'FIM DE JOGO!')
+                    player.passadas = 0
+
+
+            b = len(self.juiz.bag.bag) == 0
+            c = (self.player1.passadas >= 2 and self.player2.passadas >= 2)
+            d = (len(self.player1.keys) == 0) or (len(self.player2.keys) == 0)
+            b = b or (c or d)
+
+
+            if b:
+                self.msg_atual = 'FIM DE JOGO'
+                self.fim_de_jogo = True
 
             # Imprimir tela
-            self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y)
+            self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y, self.msg_atual)
 
             p.display.flip()
 
@@ -184,5 +220,12 @@ class Game:
 
 
 if __name__ == '__main__':
-    game = Game()
+
+    tipo_p1 = False
+    tipo_p2 = False
+
+    nome_p1 = 'BOT1'
+    nome_p2 = 'BOT2'
+
+    game = Game(tipo_p1, nome_p1, tipo_p2, nome_p2)
     game.game_loop()

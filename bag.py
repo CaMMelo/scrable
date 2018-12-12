@@ -1,6 +1,8 @@
 from key import Key
 from random import randrange
 
+
+
 class Bag:
 
     def __init__(self):
@@ -47,11 +49,16 @@ class Bag:
                 self.bag.append(k)
 
     def sort_key(self):
-        index = randrange(len(self.bag))
-        aux = self.bag[index]
-        del self.bag[index]
 
-        return aux
+        n = len(self.bag)
+
+        if n == 0:
+            pass
+        else:
+            index = randrange(len(self.bag))
+            aux = self.bag[index]
+            del self.bag[index]
+            return aux
 
     def __str__(self):
         aux = "["
