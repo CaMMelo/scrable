@@ -1,6 +1,7 @@
 from player import Player
 from key import Key
 from juiz import Juiz
+from random import shuffle
 
 class Bot(Player):
 
@@ -36,22 +37,27 @@ class Bot(Player):
 
         if d == 'v':
             y -= 1
-            while (not self.board.bloco_preenchido(x, y)) and (y > 0):
+            while (not self.board.bloco_preenchido(x, y)) and (y >= 0):
                 y -= 1
                 limite += 1
         
         if d == 'h':
             x -= 1
-            while (not self.board.bloco_preenchido(x, y)) and (x > 0):
+            while (not self.board.bloco_preenchido(x, y)) and (x >= 0):
                 x -= 1
                 limite += 1
+        
+        if self.board.bloco_preenchido(x, y):
+            limite -= 1
 
-        return limite if limite == 0 else limite + 1
+        return limite
     
     def get_ancoras(self):
 
         if self.board.board[7][7] == 'ST':
-            return [(7, 7, 7,'v'), (7, 7, 7,'h'),]
+            l = [(7, 7, 7,'h'), (7, 7, 7,'v'),]
+            shuffle(l)
+            return l
 
         n = len(self.board.board)
         m = len(self.board.board[0])
@@ -91,7 +97,7 @@ class Bot(Player):
             if x < 14:
                 xx = x+1
                 l  = self.board.board[xx][y]
-                while (xx < 15) and self.board.bloco_preenchido(xx, y):
+                while (xx < 14) and self.board.bloco_preenchido(xx, y):
                     w += l
                     xx += 1
                     l  = self.board.board[xx][y]
@@ -110,7 +116,7 @@ class Bot(Player):
             if y < 14:
                 yy = y+1
                 l  = self.board.board[x][yy]
-                while (yy < 15) and self.board.bloco_preenchido(x, yy):
+                while (yy < 14) and self.board.bloco_preenchido(x, yy):
                     w += l
                     yy += 1
                     l  = self.board.board[x][yy]
@@ -131,10 +137,12 @@ class Bot(Player):
     
     def extend_right(self, partial_word, node, x, y, rack, d):
 
-        if(x == 15 or y == 15):
+        if x == 15 or y == 15:
+            l = '0'
+        elif x < 15 and y < 15:
+            l = self.board.board[x][y]
+        else:
             return
-
-        l = self.board.board[x][y]
 
         if not self.board.bloco_preenchido(x, y):
 

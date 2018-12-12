@@ -25,7 +25,27 @@ class Board:
             ['TP', '0', '0', 'DL', '0', '0', '0', 'TP', '0', '0', '0', 'DL', '0', '0', 'TP'],
         ]
 
+        lista = [(x, y) for y in range(15) for x in range(15)]
+
+        self.pont = {
+            'DP': [
+                x for x in filter(lambda x: self.board[x[0]][x[1]] == 'DP', lista )
+            ] + [(7,7)],
+            'DL': [
+                x for x in filter(lambda x: self.board[x[0]][x[1]] == 'DL', lista )
+            ],
+            'TP': [
+                x for x in filter(lambda x: self.board[x[0]][x[1]] == 'TP', lista )
+            ],
+            'TL': [
+                x for x in filter(lambda x: self.board[x[0]][x[1]] == 'TL', lista )
+            ],
+        }
+
     def bloco_preenchido(self, x, y):
+
+        if (x == 15) or (y == 15):
+            return False
 
         if (self.board[x][y] == '0') or (self.board[x][y] == 'S') or (len(self.board[x][y]) == 2):
             return False
@@ -41,13 +61,13 @@ class Board:
             i = y
             for c in palavra:
                 sletra = Key(c).value
-                if self.board[x][i] == 'TL':
+                if (x, i) in self.pont['TL']:
                     sletra *= 3
-                elif self.board[x][i] == 'DL':
+                elif (x, i) in self.pont['DL']:
                     sletra *= 2
-                elif (self.board[x][i] == 'DP') or (self.board[x][i] == 'ST'):
+                elif (x, i) in self.pont['DP']:
                     multiplicador_final *= 2
-                elif self.board[x][i] == 'TP':
+                elif (x, i) in self.pont['TP']:
                     multiplicador_final *= 3
 
                 i += 1
@@ -57,18 +77,19 @@ class Board:
             i = x
             for c in palavra:
                 sletra = Key(c).value
-                if self.board[i][y] == 'TL':
+                if (i, y) in self.pont['TL']:
                     sletra *= 3
-                elif self.board[i][y] == 'DL':
+                elif (i, y) in self.pont['DL']:
                     sletra *= 2
-                elif (self.board[i][y] == 'DP') or (self.board[x][i] == 'ST'):
+                elif (i, y) in self.pont['DP']:
                     multiplicador_final *= 2
-                elif self.board[i][y] == 'TP':
+                elif (i, y) in self.pont['TP']:
                     multiplicador_final *= 3
 
                 i += 1
                 score += sletra 
         
+        print(multiplicador_final, palavra, x, y)
         return score * multiplicador_final
 
     def coloca_palavra(self, x, y, d, palavra):

@@ -108,11 +108,11 @@ class Juiz:
         if not self.dicionario.find(palavra):
             raise Exception(f'A palavra {palavra} não existe no dicionario.')
 
-        if (d == 'v') and ((y < 0) or ((y+n) >= 15)):
-            raise Exception('Palavra muito longa.')
+        if (d == 'v') and ((y < 0) or ((y+n) > 15)):
+            raise Exception(f'Palavra {palavra} muito longa ({x}, {y}, {d}).')
 
-        if (d == 'h') and ((x < 0) or ((x+n) >= 15)):
-            raise Exception('Palavra muito longa.')
+        if (d == 'h') and ((x < 0) or ((x+n) > 15)):
+            raise Exception(f'Palavra {palavra} muito longa ({x}, {y}, {d}).')
 
         if self.jogada == 1:
             if (d == 'v') and ((y > 7) or ((y + n) <= 7) or (x != 7)):

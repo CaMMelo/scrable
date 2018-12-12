@@ -115,7 +115,7 @@ class Game:
                 selection_click = False
 
             # Realiza jogada
-            if True:
+            if play_click or True:
                 self.troca_turno()
 
                 jogada = player.play()

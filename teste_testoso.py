@@ -1,4 +1,4 @@
-
+from juiz import Juiz
 
 
 
@@ -19,10 +19,4 @@ class Fear:
 
 
 if __name__ == '__main__':
-
-    m = Medo()
-    f = Fear(m.mat)
-
-    m.mat[0][0] = 70
-
-    print(f.mat)
+    pass
