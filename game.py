@@ -47,14 +47,6 @@ class Game:
 
 
         self.player1.init_keys(self.juiz.bag)
-        # self.player1.add_key(Key(' '))
-        # self.player1.add_key(Key(' '))
-        # self.player1.add_key(Key(' '))
-        # self.player1.add_key(Key(' '))
-        # self.player1.add_key(Key(' '))
-        # self.player1.add_key(Key(' '))
-        # self.player1.add_key(Key(' '))
-
         self.player2.init_keys(self.juiz.bag)
 
         self.run = True
@@ -133,6 +125,9 @@ class Game:
                 self.screen.w_input_box.active = True
                 selection_click = False
 
+            self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y, self.msg_atual)
+            p.display.flip()
+
             if self.fim_de_jogo:
                 continue
             
@@ -145,9 +140,7 @@ class Game:
                         self.juiz.realiza_jogada(player, x, y, d, palavra)
                     except Exception as e:
                         self.msg_atual = str(e)
-
-                    self.player1.primeira_jogada = False
-                    self.player2.primeira_jogada = False
+                        self.troca_turno()
                     self.troca_turno()
                     player.passadas = 0
                 else:
@@ -174,14 +167,14 @@ class Game:
                         self.juiz.realiza_jogada(player, x, y, d, palavra)
 
                     except Exception as e:
-
                         self.msg_atual = str(e)
+                        self.troca_turno()
 
                     self.screen.w_input_box.value = ''
 
                     play_click = False
                 
-                # Trocar palavras
+                # Trocar letras
                 if switch_keys_click:
                     self.troca_turno()
                     vet_aux = []
@@ -208,13 +201,17 @@ class Game:
 
 
             if b:
-                self.msg_atual = 'FIM DE JOGO'
+                if self.player1.score > self.player2.score:
+                    self.msg_atual = self.player1.name
+                else:
+                    self.msg_atual = self.player2.name
+
+                self.msg_atual += ' GANHOU A PARTIDA! :D'
+
                 self.fim_de_jogo = True
-
-            # Imprimir tela
-            self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y, self.msg_atual)
-
-            p.display.flip()
+            
+            self.player1.primeira_jogada = False
+            self.player2.primeira_jogada = False
 
         p.quit()
 

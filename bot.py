@@ -5,7 +5,7 @@ from random import shuffle
 
 class Bot(Player):
 
-    def __init__(self, juiz, name='ROBOZONARO'):
+    def __init__(self, juiz, name='BOT'):
         super().__init__(name)
         self.board = juiz.board
         self.dic = juiz.dicionario
@@ -164,14 +164,15 @@ class Bot(Player):
             cross = self.cross_check(x, y, d)
             for e in node[1]:
                 b = e in cross
+                new_node = self.dic.dfa[node[1][e]]
                 if (e in rack) and b:
                     rack.remove(e)
-
+                    
                     if d == 'v':
-                        self.extend_right(partial_word+e, node[1][e], x, y+1, rack, d)
+                        self.extend_right(partial_word+e, new_node, x, y+1, rack, d)
                     
                     if d == 'h':
-                        self.extend_right(partial_word+e, node[1][e], x+1, y, rack, d)
+                        self.extend_right(partial_word+e, new_node, x+1, y, rack, d)
                     
                     rack.append(e)
                 
@@ -179,31 +180,33 @@ class Bot(Player):
                 elif (' ' in rack) and b:
                     rack.remove(' ')
                     if d == 'v':
-                        self.extend_right(partial_word+e, node[1][e], x, y+1, rack, d)
+                        self.extend_right(partial_word+e, new_node, x, y+1, rack, d)
                     if d == 'h':
-                        self.extend_right(partial_word+e, node[1][e], x+1, y, rack, d)
+                        self.extend_right(partial_word+e, new_node, x+1, y, rack, d)
                     rack.append(' ')
                 
         elif l in node[1]:
+            new_node = self.dic.dfa[node[1][l]]
 
             if d == 'v':
-                self.extend_right(partial_word+l, node[1][l], x, y+1, rack, d)
+                self.extend_right(partial_word+l, new_node, x, y+1, rack, d)
             
             if d == 'h':
-                self.extend_right(partial_word+l, node[1][l], x+1, y, rack, d)
+                self.extend_right(partial_word+l, new_node, x+1, y, rack, d)
     
     def left_part(self, partial_word, node, limit, x, y, rack, d):
         self.extend_right(partial_word, node, x, y, rack, d)
 
         if limit > 0:
             for l in node[1]:
+                new_node = self.dic.dfa[node[1][l]]
                 if l in rack:
                     rack.remove(l)
-                    self.left_part(partial_word+l, node[1][l], limit-1, x, y, rack, d)
+                    self.left_part(partial_word+l, new_node, limit-1, x, y, rack, d)
                     rack.append(l)
                 elif ' ' in rack:
                     rack.remove(' ')
-                    self.left_part(partial_word+l, node[1][l], limit-1, x, y, rack, d)
+                    self.left_part(partial_word+l, new_node, limit-1, x, y, rack, d)
                     rack.append(' ')
 
     def escolhe_trocas(self):
@@ -221,7 +224,7 @@ class Bot(Player):
 
         for ancora in ancoras:
             x, y, l, d = ancora
-            self.left_part('', self.dic.dfa, l, x, y, rack, d)
+            self.left_part('', self.dic.dfa[0], l, x, y, rack, d)
         
         return self.move
     
