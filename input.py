@@ -26,10 +26,14 @@ class Input:
     def draw(self, surface, font):
         
         txt = font.render(self.value, True, self.color)
-        surface.blit(txt, (self.rect.x + 10, self.rect.y + 5))
+        xx = self.rect.x + self.rect.w//2 - txt.get_width()//2
+        yy = self.rect.y + self.rect.h//2 - txt.get_height()//2
+        surface.blit(txt, (xx, yy))
 
         txt = font.render(self.label, True, self.color)
-        surface.blit(txt, (self.rect.x - 30, self.rect.y + 5))
+        xx = self.rect.x - txt.get_width()
+        yy = self.rect.y + self.rect.h//2 - txt.get_height()//2
+        surface.blit(txt, (xx, yy))
 
         p.draw.rect(surface, self.color, self.rect, 2)
     
@@ -68,20 +72,14 @@ class InputCheck(Input):
     def __init__(self, x, y, w, h, options=[], label=''):
         super().__init__(x, y, w, h, label)
         self.options = options
-        self.value = False
+        self.option = False
+        self.value = self.options[int(self.option)]
 
-    def draw(self, surface, font):
-        txt = font.render(self.options[int(self.value)], True, self.color)
-        surface.blit(txt, (self.rect.x + 10, self.rect.y + 5))
-
-        txt = font.render(self.label, True, self.color)
-        surface.blit(txt, (self.rect.x - 30, self.rect.y + 5))
-
-        p.draw.rect(surface, self.color, self.rect, 2)
+    def atualiza_valor(self):
+        self.value = self.options[int(self.option)]
     
-    def atualiza_ativo(self, pos):
-        if pos == None or self.rect.collidepoint(pos):
-            self.value = not self.value
+    def atualiza_ativo(self):
+        self.option = not self.option
 
 class InputSelect(Input):
     def __init__(self, x, y, w, h, label, color_t, color_f):
@@ -97,7 +95,10 @@ class InputSelect(Input):
             txt = font.render("?", True, self.color)
         else:
             txt = font.render(self.label, True, self.color)
-        surface.blit(txt, (self.rect.x + 10, self.rect.y + 5))
+
+        xx = self.rect.x + self.rect.w//2 - txt.get_width()//2
+        yy = self.rect.y + self.rect.h//2 - txt.get_height()//2
+        surface.blit(txt, (xx, yy))
 
         p.draw.rect(surface, self.current_color, self.rect, 2)
     

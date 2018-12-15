@@ -2,9 +2,8 @@ import pygame as p
 from random import randint
 from player import Player
 from bot import Bot
-from juiz import Juiz
+from juiz import Juiz, MacacoException
 from screen import Screen
-from key import Key
 
 
 def unicode_hex_to_int(unicode):
@@ -72,7 +71,14 @@ class Game:
 
         while self.run:
 
+            # guarda uma referência ao jogador atual
             player = self.player1 if self.turno else self.player2
+
+            self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y, self.msg_atual)
+            p.display.flip()
+
+            if self.fim_de_jogo:
+                continue
             
             # Trata entrada
             for ev in p.event.get():
@@ -92,8 +98,8 @@ class Game:
                 if ev.type == p.MOUSEBUTTONDOWN:
                     self.screen.x_input_box.atualiza_ativo(ev.pos)
                     self.screen.y_input_box.atualiza_ativo(ev.pos)
-                    self.screen.d_input_box.atualiza_ativo(ev.pos)
                     self.screen.w_input_box.atualiza_ativo(ev.pos)
+
 
                     for hand_input in self.screen.hand_inputs:
                         hand_input.atualiza_ativo(ev.pos)
@@ -103,11 +109,12 @@ class Game:
                     pass_click = self.screen.pass_button.check_click(ev.pos)
                     
                     pos = p.mouse.get_pos()
-                    if (pos[0] >= 32 and pos[1] >= 32) and (pos[0] <= 512 and pos[1] <=512) and ev.button == 1:
+                    if (pos[0] >= 32 and pos[1] >= 32) and (pos[0] <= 512 and pos[1] <=512):
                         selection_click = True
 
                     if ev.button == 3:
-                        self.screen.d_input_box.atualiza_ativo(None)
+                        self.screen.d_input_box.atualiza_ativo()
+                        self.screen.d_input_box.atualiza_valor()
 
                 if ev.type == p.KEYDOWN:
                     if ev.key == p.K_RETURN:
@@ -124,25 +131,18 @@ class Game:
                 self.screen.y_input_box.value = int_to_hex(str(pos_sel_y))
                 self.screen.w_input_box.active = True
                 selection_click = False
-
-            self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y, self.msg_atual)
-            p.display.flip()
-
-            if self.fim_de_jogo:
-                continue
             
-            if (type(player).__name__ == 'Bot'):
+            if (type(player).__name__ == 'Bot') and play_click:
                 jogada = player.play()
+                print(jogada)
                 if jogada:
                     x, y, d, palavra, _ = jogada
 
-                    try:
-                        self.juiz.realiza_jogada(player, x, y, d, palavra)
-                    except Exception as e:
-                        self.msg_atual = str(e)
-                        self.troca_turno()
-                    self.troca_turno()
+                    self.juiz.realiza_jogada(player, x, y, d, palavra)
+                    self.player1.primeira_jogada = False
+                    self.player2.primeira_jogada = False
                     player.passadas = 0
+                
                 else:
                     self.juiz.troca_letras(player, player.escolhe_trocas())
                     player.passadas += 1
@@ -163,10 +163,10 @@ class Game:
                     d = direction_decode(d)
 
                     try:
-
                         self.juiz.realiza_jogada(player, x, y, d, palavra)
-
-                    except Exception as e:
+                        self.player1.primeira_jogada = False
+                        self.player2.primeira_jogada = False
+                    except MacacoException as e:
                         self.msg_atual = str(e)
                         self.troca_turno()
 
@@ -209,9 +209,6 @@ class Game:
                 self.msg_atual += ' GANHOU A PARTIDA! :D'
 
                 self.fim_de_jogo = True
-            
-            self.player1.primeira_jogada = False
-            self.player2.primeira_jogada = False
 
         p.quit()
 

@@ -8,7 +8,7 @@ class Bot(Player):
     def __init__(self, juiz, name='BOT'):
         super().__init__(name)
         self.board = juiz.board
-        self.dic = juiz.dicionario
+        self.dic = juiz.dic
 
         self.juiz = juiz
     
@@ -221,6 +221,8 @@ class Bot(Player):
         self.move = None
         
         rack = [x.key for x in filter(lambda x: x != None, self.keys)]
+
+        print(ancoras, rack)
 
         for ancora in ancoras:
             x, y, l, d = ancora
