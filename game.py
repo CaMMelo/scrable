@@ -76,12 +76,17 @@ class Game:
 
             self.screen.draw(player, self.juiz.board.board, pos_sel_x, pos_sel_y, self.msg_atual)
             p.display.flip()
-
-            if self.fim_de_jogo:
-                continue
             
             # Trata entrada
             for ev in p.event.get():
+
+                if ev.type == p.QUIT:
+                    self.run = False
+                    break
+
+                if self.fim_de_jogo:
+                    continue
+
                 if ev.type == p.MOUSEMOTION:
                     pos = p.mouse.get_pos()
                     if (pos[0] >= 32 and pos[1] >= 32) and (pos[0] <= 512 and pos[1] <=512):
@@ -90,10 +95,6 @@ class Game:
                     else:
                         pos_sel_x = 0
                         pos_sel_y = 0
-
-                if ev.type == p.QUIT:
-                    self.run = False
-                    continue
                 
                 if ev.type == p.MOUSEBUTTONDOWN:
                     self.screen.x_input_box.atualiza_ativo(ev.pos)
@@ -132,23 +133,21 @@ class Game:
                 self.screen.w_input_box.active = True
                 selection_click = False
             
-            if (type(player).__name__ == 'Bot') and play_click:
+            if (type(player).__name__ == 'Bot'):
                 jogada = player.play()
-                print(jogada)
                 if jogada:
                     x, y, d, palavra, _ = jogada
-
                     self.juiz.realiza_jogada(player, x, y, d, palavra)
                     self.player1.primeira_jogada = False
                     self.player2.primeira_jogada = False
                     player.passadas = 0
-                
+                    self.troca_turno()
                 else:
                     self.juiz.troca_letras(player, player.escolhe_trocas())
                     player.passadas += 1
                     self.troca_turno()
                 
-                play_click = False
+                print(self.player1.passadas, self.player2.passadas)
             else:
                 if play_click:
                     self.troca_turno()
@@ -166,6 +165,7 @@ class Game:
                         self.juiz.realiza_jogada(player, x, y, d, palavra)
                         self.player1.primeira_jogada = False
                         self.player2.primeira_jogada = False
+                        player.passadas = 0
                     except MacacoException as e:
                         self.msg_atual = str(e)
                         self.troca_turno()
@@ -184,21 +184,19 @@ class Game:
                     self.juiz.troca_letras(player, vet_aux)
                     switch_keys_click = False
                     self.reset_hand_inputs()
+
+                    player.passadas += 1
                 
                 # Passar turno
                 if pass_click:
                     self.troca_turno()
                     pass_click = False
                     player.passadas += 1
-                else:
-                    player.passadas = 0
-
 
             b = len(self.juiz.bag.bag) == 0
             c = (self.player1.passadas >= 2 and self.player2.passadas >= 2)
             d = (len(self.player1.keys) == 0) or (len(self.player2.keys) == 0)
-            b = b or (c or d)
-
+            b = b and (c or d)
 
             if b:
                 if self.player1.score > self.player2.score:
@@ -215,7 +213,7 @@ class Game:
 
 if __name__ == '__main__':
 
-    tipo_p1 = False
+    tipo_p1 = True
     tipo_p2 = False
 
     nome_p1 = 'BOT1'

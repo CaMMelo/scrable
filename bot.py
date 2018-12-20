@@ -1,33 +1,15 @@
 from player import Player
 from key import Key
-from juiz import Juiz
+from juiz import Juiz, MacacoException
 from random import shuffle
 
 class Bot(Player):
 
     def __init__(self, juiz, name='BOT'):
         super().__init__(name)
+        self.juiz = juiz
         self.board = juiz.board
         self.dic = juiz.dic
-
-        self.juiz = juiz
-    
-    def palavra_nao_existe(self, x, y, d, palavra):
-        
-        if d == 'v':
-
-            for c in palavra:
-                if not self.board.bloco_preenchido(x, y):
-                    return True
-                y += 1
-        
-        if d == 'h':
-            for c in palavra:
-                if not self.board.bloco_preenchido(x, y):
-                    return True
-                x += 1
-        
-        return False
     
     def calc_limite(self, x, y, d):
 
@@ -152,14 +134,19 @@ class Bot(Player):
                 if not self.primeira_jogada:
                     if d == 'v':
                         yy = y - len(partial_word)
-                    if d == 'h':
+                    elif d == 'h':
                         xx = x - len(partial_word)
 
                 score = self.board.calc_score(xx, yy, d, partial_word)
-                ok = self.juiz.verifica_adjacencia(xx, yy, d, partial_word)
-                ok = ok and self.palavra_nao_existe(xx, yy, d, partial_word)
-                if ok and ((not self.move) or (self.move[4] < score)):
-                    self.move = (xx, yy, d, partial_word, score)
+                
+                print(xx, yy, d, partial_word)
+
+                try:
+                    self.juiz.verifica_jogada(self, xx, yy, d, partial_word)
+                    if ((not self.move) or (self.move[4] < score)):
+                        self.move = (xx, yy, d, partial_word, score)
+                except MacacoException as e:
+                    print(e)
             
             cross = self.cross_check(x, y, d)
             for e in node[1]:
@@ -221,8 +208,6 @@ class Bot(Player):
         self.move = None
         
         rack = [x.key for x in filter(lambda x: x != None, self.keys)]
-
-        print(ancoras, rack)
 
         for ancora in ancoras:
             x, y, l, d = ancora

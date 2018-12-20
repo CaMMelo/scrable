@@ -5,15 +5,13 @@ import pickle
 class DFA:
 
     def __init__(self):
-        dfa = [False, {}]
-        
-        self.states = [dfa, ]
+        self.dfa = [[False, {}], ]
     
     def insert(self, word):
         
-        n = len(self.states) - 1
+        n = len(self.dfa) - 1
 
-        state = self.states[0]
+        state = self.dfa[0]
 
         for w in word:
             
@@ -22,21 +20,21 @@ class DFA:
                 n += 1
                 state[1][w] = n
                 
-                self.states.append(new_state)
+                self.dfa.append(new_state)
             
             state = state[1][w]
-            state = self.states[state]
+            state = self.dfa[state]
         
         state[0] = True
     
     def minimize(self):
         
-        n = len(self.states)
+        n = len(self.dfa)
         
-        alfabeto = [chr(x) for x in range(ord('a'), ord('z')+1)]
+        alfabeto = list('abcdefghijklmnopqrstuvwxyz')
         
-        estados_accept = frozenset([x for x in filter(lambda x: self.states[x][0], range(n))])
-        estados_reject = frozenset([x for x in filter(lambda x: not self.states[x][0], range(1,n))])
+        estados_accept = frozenset([x for x in filter(lambda x: self.dfa[x][0], range(n))])
+        estados_reject = frozenset([x for x in filter(lambda x: not self.dfa[x][0], range(1,n))])
         
         P = set([estados_accept, estados_reject])
         Q = set([estados_accept])
@@ -45,8 +43,8 @@ class DFA:
         letter = {}
         
         for k in range(n):
-            for c in self.states[k][1]:
-                t = self.states[k][1][c]
+            for c in self.dfa[k][1]:
+                t = self.dfa[k][1][c]
                 source[t] = k
                 letter[t] = c
         
@@ -81,17 +79,7 @@ class DFA:
                                 Q.add(i)
                             else:
                                 Q.add(d)
-                
-                        
         # end while
-        
-        with open('temp.bin', 'wb+') as f:
-            pickle.dump(P, f)
-        
-        
-    def from_set(self, P):
-        
-        n = len(self.states)
         P = list(P)
         P.remove(frozenset())
         
@@ -106,18 +94,18 @@ class DFA:
         
         for k in range(n):
             source = equiv[k]
-            for c in self.states[k][1]:
-                target = equiv[self.states[k][1][c]]
+            for c in self.dfa[k][1]:
+                target = equiv[self.dfa[k][1][c]]
                 states[source][1][c] = target
             
-            states[source][0] = self.states[k][0]
+            states[source][0] = self.dfa[k][0]
 
-        self.states = states
+        self.dfa = states
     
     def save(self, filename):
         
         with open(filename, 'wb+') as f:
-            pickle.dump(self.states, f)
+            pickle.dump(self.dfa, f)
 
 class Dict:
 
@@ -156,24 +144,6 @@ if __name__ == '__main__':
     
     dfa.save('wordlist-big.bin')
     
-    if True:
+    dfa.minimize()
     
-        #dfa.minimize()
-        
-        
-        with open('temp.bin', 'rb') as f:
-            
-            p = pickle.load(f)
-            dfa.from_set(p)
-        
-        dfa.save('wordlist-small.bin')
-        
-        
-        dfa = Dict('wordlist-small.bin')
-        
-        with open(path, 'r') as in_file:
-
-            for line in in_file:
-                line = line.strip()
-                if not dfa.find(line):
-                    print(line)
+    dfa.save('wordlist-small.bin')

@@ -91,6 +91,19 @@ class Board:
         
         return score * multiplicador_final
 
+    def no_tabuleiro(self, x, y, d, palavra):
+
+        for c in palavra:
+            if not self.bloco_preenchido(x, y):
+                return False
+
+            if d == 'v':
+                y += 1
+            elif d == 'h':
+                x += 1
+
+        return True
+
     def coloca_palavra(self, x, y, d, palavra):
         n = len(palavra)
 

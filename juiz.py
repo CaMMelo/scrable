@@ -85,7 +85,7 @@ class Juiz:
                             w += l
                 x += 1
 
-            if not self.dic.find(w):
+            if (len(w) > 1) and (not self.dic.find(w)):
                 return False
         
         return True
@@ -100,6 +100,9 @@ class Juiz:
 
         if not self.dic.find(palavra):
             raise MacacoException(f'A palavra {palavra} não existe no dicionario.')
+
+        if self.board.no_tabuleiro(x, y, d, palavra):
+            raise MacacoException(f'Essa palavra já está no tabuleiro')
 
         if d == 'v':
             if (y + n - 1) > 14:
@@ -157,10 +160,19 @@ class Juiz:
         for c in palavra:
             key = self.verifica_letra(jogador.keys, xx, yy, c)
 
+            print(key)
+
             if key and (type(key).__name__ == 'Key'):
                 keys.append(key)
-            else:
+            elif not key:
                 raise MacacoException(f'Não é possivel formar a palavra {palavra}.')
+
+            if d == 'v':
+                yy += 1
+            elif d == 'h':
+                xx += 1
+
+        print(keys, jogador.keys, palavra)
 
         for key in keys:
             jogador.keys.remove(key)

@@ -19,3 +19,6 @@ class Player:
             k = bag.sort_key()
 
             self.keys.append(k)
+
+    def __str__(self):
+        return self.name
